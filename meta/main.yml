@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  role_name: user_setup
+  namespace: virtuos
+  author: Lars Kiesow
+  description: Manage users on Linux servers
+  company: virtUOS
+  license: BSD-3-Clause
+  min_ansible_version: "2.10"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - jammy
+dependencies: []

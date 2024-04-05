@@ -1,0 +1,95 @@
+---
+- name: Check if variables are defined
+  ansible.builtin.assert:
+    that:
+      - admins is truthy
+
+- name: Ensure sudo is installed
+  ansible.builtin.package:
+    name: sudo
+
+- name: Retrieve SSH keys from LDAP
+  community.general.ldap_search:
+    bind_dn: ''
+    dn: uid={{ item }},ou=people,dc=uni-osnabrueck,dc=de
+    attrs:
+      - sshPublicKey
+    server_uri: ldaps://ldap.uni-osnabrueck.de
+  register: ldap_search_result
+  loop: '{{ admins }}'
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Map users to keys
+  ansible.builtin.set_fact:
+    ssh_keys: >
+      {{ dict(
+      ldap_search_result.results
+      | map(attribute="item")
+      | zip(
+        ldap_search_result.results
+        | map(attribute="results")
+        | map(attribute=0)
+        | map(attribute="sshPublicKey")
+      )) }}
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Ensure group wheel exists
+  ansible.builtin.group:
+    name: wheel
+    state: present
+
+- name: Allow wheel to sudo without a password
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "^%wheel"
+    line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+
+- name: Create admin users
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: wheel
+    append: true
+  loop: "{{ admins | flatten }}"
+
+- name: Set up admin authorized keys
+  ansible.posix.authorized_key:
+    user: "{{ item }}"
+    state: present
+    key: '{{ ssh_keys[item] }} }}'
+    exclusive: true
+  loop: "{{ admins | flatten }}"
+
+- name: Detect and remove old users
+  when: delete_users
+  block:
+    - name: Detect users
+      ansible.builtin.find:
+        paths: /home/
+        recurse: false
+        file_type: directory
+      register: system_users
+
+    - name: Detect old users
+      ansible.builtin.set_fact:
+        old_users: >
+          {{ system_users.files
+          | map(attribute="pw_name")
+          | difference((admins + ["root"]) | flatten) }}
+      delegate_to: 127.0.0.1
+      become: false
+
+    - name: Remove old users
+      ansible.builtin.user:
+        name: '{{ item }}'
+        state: absent
+        remove: true
+      loop: '{{ old_users }}'
+
+    - name: Delete old home directories
+      ansible.builtin.file:
+        state: absent
+        path: /home/{{ item }}/
+      loop: '{{ old_users }}'

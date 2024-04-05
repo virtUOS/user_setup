@@ -1,0 +1,11 @@
+---
+# The list of admin user names to add on every machine.
+# The list is flattened automatically to allow for something like:
+# admins:
+#   - *global_admins
+#   - additional_admin
+admins: []
+
+# If users not listed as admins should be deleted.
+# The script uses home directories to identify existing users.
+delete_users: true
