@@ -24,7 +24,7 @@ Just add the role to your playbook and specify your template:
 
 In your `requirements.yml`:
 ```yaml
-  src: https://github.com/virtUOS/user_setup.git
+- src: https://github.com/virtUOS/user_setup.git
   scm: git
   version: main
 ```
