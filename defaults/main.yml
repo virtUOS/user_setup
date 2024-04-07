@@ -1,4 +1,8 @@
 ---
+# SSH key source
+# Options are `gitlab` or `ldap`
+key_source: gitlab
+
 # The list of admin user names to add on every machine.
 # The list is flattened automatically to allow for something like:
 # admins:

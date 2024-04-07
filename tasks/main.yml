@@ -19,6 +19,7 @@
   loop: '{{ admins }}'
   delegate_to: 127.0.0.1
   become: false
+  when: key_source == 'ldap'
 
 - name: Map users to keys
   ansible.builtin.set_fact:
@@ -34,6 +35,7 @@
       )) }}
   delegate_to: 127.0.0.1
   become: false
+  when: key_source == 'ldap'
 
 - name: Ensure group wheel exists
   ansible.builtin.group:
@@ -58,7 +60,11 @@
   ansible.posix.authorized_key:
     user: "{{ item }}"
     state: present
-    key: '{{ ssh_keys[item] }} }}'
+    key: >
+      {{ ssh_keys[item]
+      if key_source == 'ldap' else
+      lookup('ansible.builtin.url', 'https://gitlab.uni-osnabrueck.de/virtuos/digitale-dienste/ssh-keys/-/raw/main/' + item + '.pub', split_lines=False)
+      }}
     exclusive: true
   loop: "{{ admins | flatten }}"
 
