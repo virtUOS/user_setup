@@ -14,7 +14,7 @@
     dn: uid={{ item }},ou=people,dc=uni-osnabrueck,dc=de
     attrs:
       - sshPublicKey
-    server_uri: ldaps://ldap.uni-osnabrueck.de
+    server_uri: '{{ ldap.server }}'
   register: ldap_search_result
   loop: '{{ admins }}'
   delegate_to: 127.0.0.1
@@ -63,7 +63,7 @@
     key: >
       {{ ssh_keys[item]
       if key_source == 'ldap' else
-      lookup('ansible.builtin.url', 'https://gitlab.uni-osnabrueck.de/virtuos/digitale-dienste/ssh-keys/-/raw/main/' + item + '.pub', split_lines=False)
+      lookup('ansible.builtin.url', http_prefix + item + '.pub', split_lines=False)
       }}
     exclusive: true
   loop: "{{ admins | flatten }}"
