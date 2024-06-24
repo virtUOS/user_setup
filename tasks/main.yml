@@ -56,7 +56,7 @@
         old_users: >
           {{ system_users.files
           | map(attribute="pw_name")
-          | difference(((admins | map(attribute="name")) + ["root"]) | flatten) }}
+          | difference((admins | map(attribute="name") | flatten) + ['root']) }}
       delegate_to: 127.0.0.1
       become: false
 
