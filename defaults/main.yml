@@ -1,8 +1,4 @@
 ---
-# SSH key source
-# Options are `http` or `ldap`
-key_source: http
-
 # The list of admin user names to add on every machine.
 # The list is flattened automatically to allow for something like:
 # admins:
@@ -13,9 +9,3 @@ admins: []
 # If users not listed as admins should be deleted.
 # The script uses home directories to identify existing users.
 delete_users: true
-
-# Prefix for URLs to get SSH keys from
-http_prefix: 'https://gitlab.uni-osnabrueck.de/virtuos/digitale-dienste/ssh-keys/-/raw/main/'
-
-# LDAP server to get SSH keys from
-ldap: 'ldaps://ldap.uni-osnabrueck.de'

@@ -1,22 +1,21 @@
 # Ansible Role to Add Unix User Accounts
 
-> ‼️  This role is made specifically for Osnabrück University.
-
 This role creates user accounts and adds SSH keys.
-
-## Dependencies
-
-This role requires the general community collection:
-
-```
-ansible-galaxy collection install community.general
-```
 
 ## Role Variables
 
 Have a look at the [defaults](defaults/main.yml) to see what variables you can set.
 
-You will need to specify the variable `admins` as a list of usernames.
+You will need to specify the variable `admins` as a list of usernames and SSH keys.
+Keys can be URLs or local files:
+
+```yaml
+admins:
+  - name: foo
+    key: http://example.com/foo.pub
+  - name: bar
+    key: ssh-keys/bar.pub
+```
 
 ## Example Playbook
 
@@ -35,8 +34,12 @@ An example playbook to create two admin unsers and detele all other users:
   become: true
   roles:
     - role: user_setup
-      admins: [lolek, bolek]
       delete_users: true
+      admins:
+        - name: foo
+          key: http://example.com/foo.pub
+        - name: bar
+          key: ssh-keys/bar.pub
 ```
 
 
