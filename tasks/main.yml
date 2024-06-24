@@ -10,9 +10,10 @@
 
 - name: Create admin users
   ansible.builtin.user:
-    name: "{{ item.name }}"
-    append: true
-  loop: "{{ admins | flatten }}"
+    name: '{{ item.name }}'
+  loop: '{{ admins | flatten }}'
+  loop_control:
+    label: '{{ item.name }}'
 
 - name: Allow users to sudo without password
   ansible.builtin.copy:
@@ -21,7 +22,9 @@
     mode: '0644'
     dest: /etc/sudoers.d/99-user_setup-{{ item.name }}
     content: '{{ item.name }} ALL=(ALL) NOPASSWD: ALL'
-  loop: "{{ admins | flatten }}"
+  loop: '{{ admins | flatten }}'
+  loop_control:
+    label: '{{ item.name }}'
 
 - name: Set up admin authorized keys
   ansible.posix.authorized_key:
@@ -31,10 +34,12 @@
     key: >
       {{
       lookup('ansible.builtin.url', item.key, split_lines=False)
-      if item.key.startswith('http')
+      if item.key.startswith('http') else
       lookup('ansible.builtin.file', item.key)
       }}
-  loop: "{{ admins | flatten }}"
+  loop: '{{ admins | flatten }}'
+  loop_control:
+    label: '{{ item.name }}'
 
 - name: Detect and remove old users
   when: delete_users
@@ -51,14 +56,14 @@
         old_users: >
           {{ system_users.files
           | map(attribute="pw_name")
-          | difference((admins + [{"name":"root"}]) | flatten) }}
+          | difference(((admins | map(attribute="name")) + ["root"]) | flatten) }}
       delegate_to: 127.0.0.1
       become: false
 
     - name: Remove old users from sudoers
       ansible.builtin.file:
         state: absent
-        path: /etc/sudoers.d/99-user_setup-{{ item.name }}
+        path: /etc/sudoers.d/99-user_setup-{{ item }}
       loop: '{{ old_users }}'
 
     - name: Remove old users
