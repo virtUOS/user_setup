@@ -1,0 +1,51 @@
+---
+
+name: Deployment
+
+on:  # yamllint disable-line rule:truthy
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distribution:
+          - dist: almalinux
+            version: '9'
+          - dist: centos
+            version: 9-Stream
+          - dist: rockylinux
+            version: '9'
+          - dist: debian
+            version: bookworm
+          - dist: ubuntu
+            version: jammy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install dependencies
+        run: pip3 install ansible
+
+      - name: install ansible.posix collection
+        run: ansible-galaxy collection install ansible.posix
+
+      - name: create lxc container
+        uses: lkiesow/setup-lxc-container@v1
+        with:
+          dist: ${{ matrix.distribution.dist }}
+          release: ${{ matrix.distribution.version }}
+
+      - name: prepare ssh key
+        working-directory: .test
+        run: cp -v ~/.ssh/id_ed25519.pub .test.pub
+
+      - name: run test deployment
+        working-directory: .test
+        run: ansible-playbook -i test, test.yml
+
+      - name: test ssh
+        run: |
+          ssh ftest@test sudo echo success
