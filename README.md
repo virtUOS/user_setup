@@ -2,6 +2,15 @@
 
 This role creates user accounts and adds SSH keys.
 
+## Requirements
+
+This role requires the `ansible.posix` collection.
+Install it via:
+
+```
+ansible-galaxy collection install ansible.posix
+```
+
 ## Role Variables
 
 Have a look at the [defaults](defaults/main.yml) to see what variables you can set.

@@ -1,0 +1,15 @@
+---
+- name: Test Deployment
+  hosts: all
+  become: true
+  roles:
+    - role: user_setup
+      delete_users: true
+      admins:
+        # yamllint disable rule:line-length
+        - name: ftest
+          key: file:.test.pub
+        - name: utest
+          key: https://gitlab.uni-osnabrueck.de/virtuos/digitale-dienste/ssh-keys/-/raw/main/lars.pub
+        - name: ktest
+          key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJD6IefLuRrBMPvXv7PVj0nIwHZIv1r/LSNRIien9dke
