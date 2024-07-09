@@ -38,6 +38,9 @@ jobs:
           dist: ${{ matrix.distribution.dist }}
           release: ${{ matrix.distribution.version }}
 
+      - name: add old user
+        run: ssh test useradd --create-home olduser
+
       - name: prepare ssh key
         working-directory: .test
         run: cp -v ~/.ssh/id_ed25519.pub .test.pub
@@ -47,5 +50,4 @@ jobs:
         run: ansible-playbook -i test, test.yml
 
       - name: test ssh
-        run: |
-          ssh ftest@test sudo echo success
+        run: ssh ftest@test ! sudo id -u olduser
