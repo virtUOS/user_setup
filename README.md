@@ -7,14 +7,20 @@ This role creates user accounts and adds SSH keys.
 Have a look at the [defaults](defaults/main.yml) to see what variables you can set.
 
 You will need to specify the variable `admins` as a list of usernames and SSH keys.
-Keys can be URLs or local files:
+Keys can be public keys as strings, URLs or local files.
+
+- To specify a key directly, just provide the key as string.
+- To load a key from file, prefix the path with the `file:` schema.
+- To load a key from a URL, specify a URL with `http:` or `https:` schema.
 
 ```yaml
 admins:
   - name: foo
     key: http://example.com/foo.pub
   - name: bar
-    key: ssh-keys/bar.pub
+    key: file:ssh-keys/bar.pub
+  - name: baz
+    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF83wYwFxccj6boydYE5yoh+Tabuon7Uuu4HGlHrbpSt
 ```
 
 ## Example Playbook
@@ -39,7 +45,9 @@ An example playbook to create two admin unsers and detele all other users:
         - name: foo
           key: http://example.com/foo.pub
         - name: bar
-          key: ssh-keys/bar.pub
+          key: file:ssh-keys/bar.pub
+        - name: baz
+          key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF83wYwFxccj6boydYE5yoh+Tabuon7Uuu4HGlHrbpSt
 ```
 
 

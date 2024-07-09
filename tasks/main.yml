@@ -35,7 +35,9 @@
       {{
       lookup('ansible.builtin.url', item.key, split_lines=False)
       if item.key.startswith('http') else
-      lookup('ansible.builtin.file', item.key)
+      lookup('ansible.builtin.file', item.key.split(':', 1)[1])
+      if item.key.startswith('file:') else
+      item.key
       }}
   loop: '{{ admins | flatten }}'
   loop_control:
