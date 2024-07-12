@@ -12,7 +12,7 @@
   roles:
     - role: user_setup
       user_setup_delete_users: true
-      admins:
+      user_setup_admins:
         - *adm
         - name: ktest
           key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJD6IefLuRrBMPvXv7PVj0nIwHZIv1r/LSNRIien9dke

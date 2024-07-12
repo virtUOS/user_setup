@@ -15,7 +15,7 @@ ansible-galaxy collection install ansible.posix
 
 Have a look at the [defaults](defaults/main.yml) to see what variables you can set.
 
-You will need to specify the variable `admins` as a list of usernames and SSH keys.
+You will need to specify the variable `user_setup_admins` as a list of usernames and SSH keys.
 Public keys can be specified as strings, URLs or local files.
 
 - To specify a key directly, just provide the key as string.
@@ -23,7 +23,7 @@ Public keys can be specified as strings, URLs or local files.
 - To load a key from a URL, specify a URL with `http:` or `https:` schema.
 
 ```yaml
-admins:
+user_setup_admins:
   - name: foo
     key: http://example.com/foo.pub
   - name: bar
@@ -50,7 +50,7 @@ An example playbook to create two admin unsers and detele all other users:
   roles:
     - role: user_setup
       user_setup_delete_users: true
-      admins:
+      user_setup_admins:
         - name: foo
           key: http://example.com/foo.pub
         - name: bar
@@ -62,9 +62,9 @@ An example playbook to create two admin unsers and detele all other users:
 
 ## Deleting Users
 
-If `user_setup_delete_users` is set to `true` (default), the role will try to delete all users not in `admins`.
+If `user_setup_delete_users` is set to `true` (default), the role will try to delete all users not in `user_setup_admins`.
 Users created via this role are part of the group `managed`.
-The users being deleted are all users in the group `managed` which are not defined in `admins`.
+The users being deleted are all users in the group `managed` which are not defined in `user_setup_admins`.
 Users with are not in the group `managed` will not be touched by this role.
 
 
