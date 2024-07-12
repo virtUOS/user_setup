@@ -40,7 +40,7 @@ In your `requirements.yml`:
 ```yaml
 - src: https://github.com/virtUOS/user_setup.git
   scm: git
-  version: main
+  version: 1.0.0
 ```
 
 An example playbook to create two admin unsers and detele all other users:
