@@ -64,7 +64,7 @@
       ansible.builtin.set_fact:
         old_users: >
           {{ managed_users.stdout.split(",")
-          | difference((admins | map(attribute="name") | flatten)) }}
+          | difference((admins | flatten | map(attribute="name"))) }}
       delegate_to: 127.0.0.1
       become: false
 
