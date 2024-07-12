@@ -16,7 +16,7 @@ ansible-galaxy collection install ansible.posix
 Have a look at the [defaults](defaults/main.yml) to see what variables you can set.
 
 You will need to specify the variable `admins` as a list of usernames and SSH keys.
-Keys can be public keys as strings, URLs or local files.
+Public keys can be specified as strings, URLs or local files.
 
 - To specify a key directly, just provide the key as string.
 - To load a key from file, prefix the path with the `file:` schema.
