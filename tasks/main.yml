@@ -3,7 +3,7 @@
 - name: Check if variables are defined
   ansible.builtin.assert:
     that:
-      - admins is truthy
+      - user_setup_admins is truthy
 
 - name: Ensure group "managed" exists
   ansible.builtin.group:
@@ -19,7 +19,7 @@
     name: '{{ item.name }}'
     groups: managed
     append: true
-  loop: '{{ admins | flatten }}'
+  loop: '{{ user_setup_admins | flatten }}'
   loop_control:
     label: '{{ item.name }}'
 
@@ -30,7 +30,7 @@
     mode: '0644'
     dest: /etc/sudoers.d/99-user_setup-{{ item.name }}
     content: '{{ item.name }} ALL=(ALL) NOPASSWD: ALL'
-  loop: '{{ admins | flatten }}'
+  loop: '{{ user_setup_admins | flatten }}'
   loop_control:
     label: '{{ item.name }}'
 
@@ -47,7 +47,7 @@
       if item.key.startswith('file:') else
       item.key
       }}
-  loop: '{{ admins | flatten }}'
+  loop: '{{ user_setup_admins | flatten }}'
   loop_control:
     label: '{{ item.name }}'
 
@@ -64,7 +64,7 @@
       ansible.builtin.set_fact:
         old_users: >
           {{ managed_users.stdout.split(",")
-          | difference((admins | flatten | map(attribute="name"))) }}
+          | difference((user_setup_admins | flatten | map(attribute="name"))) }}
       delegate_to: 127.0.0.1
       become: false
 

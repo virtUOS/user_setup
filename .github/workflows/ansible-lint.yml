@@ -16,8 +16,11 @@ jobs:
       - name: install dependencies
         run: >
           pip3 install
+          ansible
           ansible-lint
           yamllint
+
+      - run: ansible-galaxy collection install ansible.posix
 
       - run: ansible-lint
 
