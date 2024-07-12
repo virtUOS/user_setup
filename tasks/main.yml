@@ -52,7 +52,7 @@
     label: '{{ item.name }}'
 
 - name: Detect and remove old users
-  when: delete_users
+  when: user_setup_delete_users
   block:
     - name: Get all managed users
       ansible.builtin.command:  # noqa command-instead-of-module
