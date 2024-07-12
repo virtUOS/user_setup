@@ -11,7 +11,7 @@
         key: https://gitlab.uni-osnabrueck.de/virtuos/digitale-dienste/ssh-keys/-/raw/main/lars.pub
   roles:
     - role: user_setup
-      delete_users: true
+      user_setup_delete_users: true
       admins:
         - *adm
         - name: ktest

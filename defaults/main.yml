@@ -16,4 +16,4 @@ admins: []
 
 # If users not listed as admins should be deleted.
 # The script uses home directories to identify existing users.
-delete_users: true
+user_setup_delete_users: true

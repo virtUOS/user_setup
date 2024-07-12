@@ -49,7 +49,7 @@ An example playbook to create two admin unsers and detele all other users:
   become: true
   roles:
     - role: user_setup
-      delete_users: true
+      user_setup_delete_users: true
       admins:
         - name: foo
           key: http://example.com/foo.pub
@@ -62,9 +62,10 @@ An example playbook to create two admin unsers and detele all other users:
 
 ## Deleting Users
 
-If `delete_users` is det to `true` (default), the role will try to delete all users not in `admins`.
-Users are identified by the directories present in `/home`.
-Users with no home directory or a home directory somewhere else are not touched by this role.
+If `user_setup_delete_users` is set to `true` (default), the role will try to delete all users not in `admins`.
+Users created via this role are part of the group `managed`.
+The users being deleted are all users in the group `managed` which are not defined in `admins`.
+Users with are not in the group `managed` will not be touched by this role.
 
 
 ## License
