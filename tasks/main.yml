@@ -1,8 +1,14 @@
 ---
+
 - name: Check if variables are defined
   ansible.builtin.assert:
     that:
       - admins is truthy
+
+- name: Ensure group "managed" exists
+  ansible.builtin.group:
+    name: managed
+    state: present
 
 - name: Ensure sudo is installed
   ansible.builtin.package:
@@ -11,6 +17,8 @@
 - name: Create admin users
   ansible.builtin.user:
     name: '{{ item.name }}'
+    groups: managed
+    append: true
   loop: '{{ admins | flatten }}'
   loop_control:
     label: '{{ item.name }}'
@@ -46,19 +54,17 @@
 - name: Detect and remove old users
   when: delete_users
   block:
-    - name: Detect users
-      ansible.builtin.find:
-        paths: /home/
-        recurse: false
-        file_type: directory
-      register: system_users
+    - name: Get all managed users
+      ansible.builtin.command:  # noqa command-instead-of-module
+        cmd: sed -n s/^managed:.*://p /etc/group
+      register: managed_users
+      changed_when: false
 
-    - name: Detect old users
+    - name: Calculate old users
       ansible.builtin.set_fact:
         old_users: >
-          {{ system_users.files
-          | map(attribute="pw_name")
-          | difference((admins | map(attribute="name") | flatten) + ['root']) }}
+          {{ managed_users.stdout.split(",")
+          | difference((admins | map(attribute="name") | flatten)) }}
       delegate_to: 127.0.0.1
       become: false
 

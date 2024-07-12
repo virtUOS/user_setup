@@ -38,8 +38,11 @@ jobs:
           dist: ${{ matrix.distribution.dist }}
           release: ${{ matrix.distribution.version }}
 
+      - name: create group managed
+        run: ssh test groupadd managed
+
       - name: add old user
-        run: ssh test useradd --create-home olduser
+        run: ssh test useradd -G managed olduser
 
       - name: prepare ssh key
         working-directory: .test
