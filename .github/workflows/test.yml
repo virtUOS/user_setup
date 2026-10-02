@@ -54,3 +54,16 @@ jobs:
 
       - name: test ssh
         run: ssh ftest@test ! sudo id -u olduser
+
+      - name: add another old user
+        run: ssh test useradd -G managed olduser2
+
+      - name: run test deployment in check mode
+        working-directory: .test
+        run: ansible-playbook -i test, test.yml --check | tee check.log
+
+      - name: test check mode sees the old user and no empty name
+        working-directory: .test
+        run: >
+          grep -F '(item=olduser2)' check.log
+          && ! grep -F '(item=)' check.log

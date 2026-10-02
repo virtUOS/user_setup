@@ -59,11 +59,18 @@
         cmd: sed -n s/^managed:.*://p /etc/group
       register: managed_users
       changed_when: false
+      # Read-only, so run it in check mode too. Skipped, it returns empty
+      # output and check mode reports deleting /home/ instead of the real
+      # old users.
+      check_mode: false
 
     - name: Calculate old users
       ansible.builtin.set_fact:
+        # An empty group gives [""] after split, and an empty name turns
+        # the path below into /home/. Drop empty names.
         old_users: >
           {{ managed_users.stdout.split(",")
+          | reject("equalto", "")
           | difference((user_setup_admins | flatten | map(attribute="name"))) }}
       delegate_to: 127.0.0.1
       become: false
